@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop-up Chatbot</title>
+    <style>
+        /* Style the chatbot popup */
+        .chatbox {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+        }
+
+        .chatbox-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+
+        .chatbox-body {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+
+        .chatbox-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+
+        .chatbox-footer input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .chatbox-footer button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .chatbox-footer button:hover {
+            background-color: #45a049;
+        }
+
+        /* Style the chat icon */
+        .chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Chatbot Icon -->
+<div class="chat-icon" onclick="toggleChatbox()">💬</div>
+
+<!-- Chatbot Popup -->
+<div class="chatbox" id="chatbox">
+    <div class="chatbox-header">
+        Chatbot
+        <button onclick="toggleChatbox()" style="background: none; color: white; border: none; font-size: 16px;">X</button>
+    </div>
+    <div class="chatbox-body" id="chatbox-body">
+        <div>Welcome! How can I help you today?</div>
+    </div>
+    <div class="chatbox-footer">
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    // Toggle the chatbot visibility
+    function toggleChatbox() {
+        const chatbox = document.getElementById('chatbox');
+        if (chatbox.style.display === "none" || chatbox.style.display === "") {
+            chatbox.style.display = "flex";
+        } else {
+            chatbox.style.display = "none";
+        }
+    }
+
+    // Handle sending a message
+    function sendMessage() {
+        const userInput = document.getElementById('user-input').value;
+        if (userInput.trim() === "") return; // Don't send empty messages
+
+        // Add user message to chat
+        const chatboxBody = document.getElementById('chatbox-body');
+        chatboxBody.innerHTML += `<div><strong>You:</strong> ${userInput}</div>`;
+
+        // Scroll to the bottom
+        chatboxBody.scrollTop = chatboxBody.scrollHeight;
+
+        // Simulate chatbot response (can be replaced with an API call)
+        setTimeout(() => {
+            const botResponse = "You said: " + userInput; // Placeholder response
+            chatboxBody.innerHTML += `<div><strong>Bot:</strong> ${botResponse}</div>`;
+            chatboxBody.scrollTop = chatboxBody.scrollHeight;
+        }, 1000);
+
+        // Clear input field
+        document.getElementById('user-input').value = "";
+    }
+</script>
+
+</body>
+</html>
