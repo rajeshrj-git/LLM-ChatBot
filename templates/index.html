@@ -1,138 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pop-up Chatbot</title>
+    <title>Popup Chat Window</title>
     <style>
-        /* Style the chatbot popup */
-        .chatbox {
+        /* CSS styles go here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .chat-button {
+            background-color: #28a745;
+            color: #fff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: fixed; /* Makes the button fixed on the screen */
+            bottom: 20px;    /* Position it 20px from the bottom */
+            right: 20px;     /* Position it 20px from the right */
+            z-index: 1000;   /* Ensure it's above other content */
+        }
+
+        .chat-button:hover {
+            background-color: #218838;
+        }
+
+        .chat-window {
+            display: none;
             position: fixed;
             bottom: 20px;
             right: 20px;
             width: 300px;
-            height: 400px;
             background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: none;
-            flex-direction: column;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            z-index: 1000;
         }
 
-        .chatbox-header {
-            background-color: #4CAF50;
-            color: white;
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
             padding: 10px;
-            font-size: 18px;
-            border-radius: 10px 10px 0 0;
-            text-align: center;
-        }
-
-        .chatbox-body {
-            flex-grow: 1;
-            padding: 10px;
-            overflow-y: auto;
-            font-size: 14px;
-        }
-
-        .chatbox-footer {
             display: flex;
-            padding: 10px;
-            border-top: 1px solid #ccc;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .chatbox-footer input {
-            width: 100%;
+        .chat-body {
             padding: 10px;
-            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .chat-footer {
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .human {
+            text-align: right;
+            color: #333;
+        }
+
+        .ai {
+            text-align: left;
+            color: #007bff;
+        }
+
+        /* Styling for the input and send button */
+        .chat-footer textarea {
+            width: 80%;
+            height: 40px;
+            padding: 8px;
             border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
             font-size: 14px;
         }
 
-        .chatbox-footer button {
+        .chat-footer .send-button {
+            width: 15%;
+            background-color: #007bff;
+            color: #fff;
             padding: 10px;
-            background-color: #4CAF50;
-            color: white;
             border: none;
             border-radius: 5px;
-            margin-left: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .chatbox-footer button:hover {
-            background-color: #45a049;
+        .chat-footer .send-button:hover {
+            background-color: #0056b3;
         }
 
-        /* Style the chat icon */
-        .chat-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        .chat-footer .send-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
     </style>
 </head>
+
 <body>
 
-<!-- Chatbot Icon -->
-<div class="chat-icon" onclick="toggleChatbox()">💬</div>
+    <h2>Welcome to Our Support Chat</h2>
+    <p>Click the button below to start chatting with us.</p>
 
-<!-- Chatbot Popup -->
-<div class="chatbox" id="chatbox">
-    <div class="chatbox-header">
-        Chatbot
-        <button onclick="toggleChatbox()" style="background: none; color: white; border: none; font-size: 16px;">X</button>
-    </div>
-    <div class="chatbox-body" id="chatbox-body">
-        <div>Welcome! How can I help you today?</div>
-    </div>
-    <div class="chatbox-footer">
-        <input type="text" id="user-input" placeholder="Type a message...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</div>
+    <!-- Button to open the chat window (message icon) -->
+    <button id="chatToggle" class="chat-button">
+        <span>&#9993;</span> <!-- Message icon -->
+    </button>
 
-<script>
-    // Toggle the chatbot visibility
-    function toggleChatbox() {
-        const chatbox = document.getElementById('chatbox');
-        if (chatbox.style.display === "none" || chatbox.style.display === "") {
-            chatbox.style.display = "flex";
-        } else {
-            chatbox.style.display = "none";
+    <!-- Chat Window -->
+    <div id="chatBox" class="chat-window">
+        <div class="chat-header">
+            <span>Chat with Support</span>
+            <button class="close-button" onclick="toggleChat()">X</button>
+        </div>
+        <div class="chat-body">
+            <div id="chatMessages"></div>
+        </div>
+        <div class="chat-footer">
+            <textarea id="chatInput" placeholder="Type your message here..."></textarea>
+            <button class="send-button" id="sendButton" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("chatToggle").addEventListener("click", toggleChat);
+
+        function toggleChat() {
+            const chatBox = document.getElementById("chatBox");
+            if (chatBox.style.display === "none" || chatBox.style.display === "") {
+                chatBox.style.display = "block";
+            } else {
+                chatBox.style.display = "none";
+            }
         }
-    }
 
-    // Handle sending a message
-    function sendMessage() {
-        const userInput = document.getElementById('user-input').value;
-        if (userInput.trim() === "") return; // Don't send empty messages
+        document.getElementById("sendButton").addEventListener("click", function () {
+            const message = document.getElementById("chatInput").value;
+            if (message) {
+                sendMessage(message);
+                document.getElementById("chatInput").value = "";
+                document.getElementById("sendButton").disabled = true;
+            }
+        });
 
-        // Add user message to chat
-        const chatboxBody = document.getElementById('chatbox-body');
-        chatboxBody.innerHTML += `<div><strong>You:</strong> ${userInput}</div>`;
+        document.getElementById("chatInput").addEventListener("input", function () {
+            const message = document.getElementById("chatInput").value;
+            document.getElementById("sendButton").disabled = !message.trim();
+        });
 
-        // Scroll to the bottom
-        chatboxBody.scrollTop = chatboxBody.scrollHeight;
+        document.getElementById("chatInput").addEventListener("keydown", function (event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                document.getElementById("sendButton").click(); // Trigger the send button click
+            }
+        });
 
-        // Simulate chatbot response (can be replaced with an API call)
-        setTimeout(() => {
-            const botResponse = "You said: " + userInput; // Placeholder response
-            chatboxBody.innerHTML += `<div><strong>Bot:</strong> ${botResponse}</div>`;
-            chatboxBody.scrollTop = chatboxBody.scrollHeight;
-        }, 1000);
+        function sendMessage(message) {
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayMessages(data.chat_history);
+            });
+        }
 
-        // Clear input field
-        document.getElementById('user-input').value = "";
-    }
-</script>
+        function displayMessages(chatHistory) {
+            const chatMessages = document.getElementById("chatMessages");
+
+            // Convert each message's content to Markdown and display
+            chatMessages.innerHTML = chatHistory.map(msg => {
+                let formattedMessage = msg.content;
+
+                // Check if the message is from "AI" and contains job openings
+                if (msg.role === 'ai') {
+                    // Check if the content is a list of job openings
+                    if (Array.isArray(msg.content) && msg.content[0].includes('Here are the job openings')) {
+                        formattedMessage = `
+**AI:** Here are the available job openings:
+
+${msg.content.slice(1).map(job => `- ${job}`).join('\n')}
+                        `;
+                    }
+                }
+
+                // Return the HTML for displaying each message
+                return `<div class="${msg.role}">${formattedMessage}</div>`;
+            }).join('');
+        }
+    </script>
 
 </body>
+
 </html>
